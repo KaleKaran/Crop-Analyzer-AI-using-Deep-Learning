@@ -1,0 +1,104 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.main {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Adjust background-size and background-position as needed */
+  background-size: cover;
+  background-position: center;
+}
+
+.content {
+  width: 1200px;
+  height: auto;
+  margin: auto;
+  color: #fff;
+  position: relative;
+  padding-top: 150px; /* Adjust padding based on your image */
+  text-align: center;
+}
+
+/* Updated styles for h1 and p elements */
+h1 {
+  font-family: 'Times New Roman';
+  font-size: 65px;
+  color:black;  /* Update color here */
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+p {  /* Changed from "par" to "p" */
+  font-size: 20.5px;
+  font-weight: 100;
+  line-height: 35px;
+  margin-bottom: 40px;
+  /* Add padding and background for the paragraph */
+  padding: 20px;
+  padding-left: 10%;
+  padding-right: 10%;
+  padding
+  background-color: rgba(255, 255, 255, 0.7); /* White with 70% opacity */
+  color: black;
+}
+
+.content .par {  /* This will be overridden by the more specific "p" style */
+  font-size: 20.5px;
+  font-weight: 100;
+  line-height: 35px;
+  margin-bottom: 40px;
+  /* Add padding and background for the paragraph */
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.7); /* White with 70% opacity */
+  color: black;
+}
+
+.analyze-btn,
+.feedback-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  text-decoration: none;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.analyze-btn {
+  background-color: #fa7a12;
+  color: #fff;
+}
+
+.analyze-btn:hover {
+  background-color: #17ae1a; /* Darker orange on hover */
+}
+
+.feedback-btn {
+  background-color: #2083c6; /* Adjust color as desired */
+  color: #fff;
+  margin-left: 20px;  /* Add spacing between buttons */
+}
+
+.feedback-btn:hover {
+  background-color: rgb(24, 185,142) /* Darker blue on hover */
+}
+
+/* Add styling for feedback.html specifically */
+.feedback.main .background-image {
+  filter: blur(0px);  /* Apply blur effect */
+}
+
+/* You can adjust the blur amount (5px in this example) */
