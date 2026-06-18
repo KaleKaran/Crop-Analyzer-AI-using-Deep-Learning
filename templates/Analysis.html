@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyze Your Crop — Rhamnus Disease Detector</title>
+    <meta name="description" content="Upload a Rhamnus Davurica leaf image to detect diseases using our CNN-based deep learning model.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f2c0f 0%, #1a4d1a 40%, #0d3b0d 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+            animation: fadeUp 0.5s ease;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: rgba(255,255,255,0.55);
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 28px;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: #6ee86e; }
+
+        .card-header { margin-bottom: 32px; }
+        .card-header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+        .card-header p {
+            color: rgba(255,255,255,0.5);
+            font-size: 14px;
+        }
+
+        .leaf-icon {
+            font-size: 40px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        label {
+            display: block;
+            color: rgba(255,255,255,0.75);
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(110, 232, 110, 0.4);
+            border-radius: 12px;
+            padding: 28px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            margin-bottom: 24px;
+            position: relative;
+        }
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #6ee86e;
+            background: rgba(110, 232, 110, 0.06);
+        }
+        .upload-area input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+        .upload-area .upload-icon { font-size: 32px; margin-bottom: 8px; }
+        .upload-area .upload-text {
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+        }
+        .upload-area .upload-hint {
+            color: rgba(255,255,255,0.35);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        #filename-display {
+            color: #6ee86e;
+            font-size: 13px;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        .crop-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(110, 232, 110, 0.1);
+            border: 1px solid rgba(110, 232, 110, 0.3);
+            color: #6ee86e;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 28px;
+            width: 100%;
+        }
+
+        .predict-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3d9e3d, #57c957);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+            box-shadow: 0 6px 20px rgba(87, 201, 87, 0.35);
+        }
+        .predict-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(87, 201, 87, 0.45);
+        }
+        .predict-btn:active { transform: translateY(0); }
+        .predict-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <a href="/" class="back-link">← Back to Home</a>
+
+        <div class="card-header">
+            <span class="leaf-icon">🌿</span>
+            <h1>Disease Detection</h1>
+            <p>Upload a leaf image to identify diseases instantly</p>
+        </div>
+
+        <form action="/predict" method="post" enctype="multipart/form-data" id="predict-form">
+
+            <label for="image">Leaf Image</label>
+            <div class="upload-area" id="upload-area">
+                <input type="file" id="image" name="image" accept="image/*" required>
+                <div class="upload-icon">📂</div>
+                <div class="upload-text">Click or drag &amp; drop your image here</div>
+                <div class="upload-hint">JPG, PNG, WEBP supported</div>
+                <div id="filename-display"></div>
+            </div>
+
+            <label>Crop</label>
+            <div class="crop-badge">
+                <span>🌱</span> Rhamnus Davurica
+            </div>
+
+            <button type="submit" class="predict-btn" id="submit-btn">
+                🔍 Analyze Leaf
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const input = document.getElementById('image');
+        const display = document.getElementById('filename-display');
+        const area = document.getElementById('upload-area');
+        const btn = document.getElementById('submit-btn');
+
+        input.addEventListener('change', () => {
+            if (input.files.length > 0) {
+                display.textContent = '✔ ' + input.files[0].name;
+            }
+        });
+
+        area.addEventListener('dragover', e => { e.preventDefault(); area.classList.add('dragover'); });
+        area.addEventListener('dragleave', () => area.classList.remove('dragover'));
+        area.addEventListener('drop', e => {
+            e.preventDefault();
+            area.classList.remove('dragover');
+            input.files = e.dataTransfer.files;
+            if (input.files.length > 0) display.textContent = '✔ ' + input.files[0].name;
+        });
+
+        document.getElementById('predict-form').addEventListener('submit', () => {
+            btn.textContent = 'Analyzing...';
+            btn.disabled = true;
+        });
+    </script>
+</body>
+</html>

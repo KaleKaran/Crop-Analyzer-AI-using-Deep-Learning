@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result — Crop Analyzer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f2c0f 0%, #1a4d1a 40%, #0d3b0d 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.07);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 640px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+            animation: fadeUp 0.5s ease;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: rgba(255,255,255,0.45);
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 28px;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: #6ee86e; }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 500px) {
+            .result-grid { grid-template-columns: 1fr; }
+        }
+
+        .leaf-img {
+            width: 100%;
+            border-radius: 14px;
+            object-fit: cover;
+            aspect-ratio: 1;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .result-info { display: flex; flex-direction: column; gap: 16px; }
+
+        .result-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .disease-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+
+        .disease-name.uncertain { color: #f59e0b; }
+        .disease-name.healthy   { color: #6ee86e; }
+
+        .confidence-bar-wrap { margin-top: 4px; }
+        .confidence-bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: rgba(255,255,255,0.55);
+            margin-bottom: 8px;
+        }
+        .confidence-bar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .confidence-bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            background: linear-gradient(90deg, #3d9e3d, #6ee86e);
+            transition: width 1s ease;
+        }
+
+        .doc-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+
+        .btn-doc {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 18px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: transform 0.15s, opacity 0.15s;
+            text-align: center;
+            justify-content: center;
+        }
+        .btn-doc:hover { transform: translateY(-2px); opacity: 0.9; }
+
+        .btn-view {
+            background: rgba(110,232,110,0.12);
+            border: 1px solid rgba(110,232,110,0.3);
+            color: #6ee86e;
+        }
+        .btn-download {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: rgba(255,255,255,0.7);
+        }
+
+        .try-again {
+            margin-top: 28px;
+            text-align: center;
+        }
+        .try-again a {
+            color: rgba(255,255,255,0.4);
+            font-size: 13px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .try-again a:hover { color: #6ee86e; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <a href="/analysis" class="back-link">← Analyze Another</a>
+
+        <div class="result-grid">
+            <div>
+                <img src="/{{ user_image }}" alt="Uploaded leaf" class="leaf-img">
+            </div>
+
+            <div class="result-info">
+                <div>
+                    <div class="result-label">Detection Result</div>
+                    <div class="disease-name {% if pred_output == 'Healthy' %}healthy{% elif pred_output == 'Uncertain' %}uncertain{% endif %}">
+                        {{ pred_output }}
+                    </div>
+                </div>
+
+                {% if confidence_score %}
+                <div class="confidence-bar-wrap">
+                    <div class="confidence-bar-label">
+                        <span>Confidence</span>
+                        <span>{{ confidence_score }}%</span>
+                    </div>
+                    <div class="confidence-bar-track">
+                        <div class="confidence-bar-fill" id="conf-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if doc_file %}
+                <div>
+                    <div class="result-label" style="margin-bottom: 10px;">Documentation</div>
+                    <div class="doc-actions">
+                        <a href="{{ url_for('view_document', doc_file=doc_file) }}" class="btn-doc btn-view" id="view-doc-btn">📄 View Details</a>
+                        <a href="{{ url_for('download', filename=doc_file) }}" class="btn-doc btn-download" id="download-doc-btn">⬇ Download Doc</a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="try-again">
+            <a href="/">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        // Animate confidence bar on load
+        window.addEventListener('load', () => {
+            const bar = document.getElementById('conf-bar');
+            if (bar) {
+                setTimeout(() => { bar.style.width = '{{ confidence_score }}%'; }, 100);
+            }
+        });
+    </script>
+</body>
+</html>

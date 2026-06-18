@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Analyzer — Rhamnus Disease Detection</title>
+    <meta name="description" content="AI-powered Rhamnus Davurica leaf disease detection using deep learning. Upload a leaf image for instant diagnosis.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a1f0a 0%, #122912 50%, #0a1a0a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Ambient glow blobs */
+        body::before, body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.18;
+            pointer-events: none;
+        }
+        body::before {
+            width: 500px; height: 500px;
+            background: #2e7d32;
+            top: -120px; left: -120px;
+        }
+        body::after {
+            width: 400px; height: 400px;
+            background: #1b5e20;
+            bottom: -100px; right: -80px;
+        }
+
+        .hero {
+            text-align: center;
+            max-width: 680px;
+            animation: fadeUp 0.6s ease;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(110, 232, 110, 0.1);
+            border: 1px solid rgba(110, 232, 110, 0.25);
+            color: #6ee86e;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+        }
+
+        h1 {
+            font-size: clamp(38px, 7vw, 72px);
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -2px;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+        h1 span { color: #6ee86e; }
+
+        .subtitle {
+            font-size: 17px;
+            color: rgba(255,255,255,0.55);
+            line-height: 1.7;
+            margin-bottom: 48px;
+            padding: 0 10px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 60px;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #3d9e3d, #57c957);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(87, 201, 87, 0.35);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 32px rgba(87, 201, 87, 0.45);
+        }
+
+        .btn-outline {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.12);
+            transition: background 0.2s, color 0.2s;
+        }
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .stats {
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #6ee86e;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 18px;
+            color: rgba(255,255,255,0.2);
+            font-size: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="badge">🌿 Deep Learning · CNN · Flask</div>
+        <h1>Crop <span>Disease</span><br>Analyzer</h1>
+        <p class="subtitle">
+            AI-powered Rhamnus Davurica leaf disease detection.<br>
+            Upload a leaf image — get an instant diagnosis with treatment insights.
+        </p>
+        <div class="actions">
+            <a href="/analysis" class="btn-primary" id="analyze-btn">🔍 Analyze Your Crop</a>
+            <a href="/feedback" class="btn-outline" id="feedback-btn">💬 Give Feedback</a>
+        </div>
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Disease Classes</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">CNN</div>
+                <div class="stat-label">Model Type</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">75%+</div>
+                <div class="stat-label">Confidence Threshold</div>
+            </div>
+        </div>
+    </div>
+
+    <footer>Built as a Diploma Final Year Project · VESP, Chembur</footer>
+</body>
+</html>

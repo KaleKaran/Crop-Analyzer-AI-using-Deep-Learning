@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Info — Crop Analyzer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f2c0f 0%, #1a4d1a 40%, #0d3b0d 100%);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.07);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 680px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+            animation: fadeUp 0.5s ease;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: rgba(255,255,255,0.45);
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 28px;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: #6ee86e; }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 24px;
+            letter-spacing: -0.3px;
+        }
+
+        .doc-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .doc-para {
+            background: rgba(255,255,255,0.05);
+            border-left: 3px solid rgba(110,232,110,0.4);
+            padding: 14px 18px;
+            border-radius: 0 8px 8px 0;
+            color: rgba(255,255,255,0.78);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <a href="/" class="back-link">← Back to Home</a>
+        <h1>📋 Disease Documentation</h1>
+
+        <div class="doc-content">
+            {% for paragraph in doc_content %}
+                <div class="doc-para">{{ paragraph }}</div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
